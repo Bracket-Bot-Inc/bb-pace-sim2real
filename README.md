@@ -35,8 +35,8 @@ We recommend using the **conda** or **uv** installation method, as this simplifi
 Clone or copy this project separately from the Isaac Lab installation (i.e. outside the `IsaacLab` directory):
 
 ```bash
-git clone https://github.com/leggedrobotics/pace-sim2real.git
-cd pace-sim2real
+git clone https://github.com/leggedrobotics/bb-pace-sim2real.git
+cd bb-pace-sim2real
 ```
 
 ### 3. Install PACE in editable mode

@@ -33,8 +33,7 @@ class BBPaceCfg(PaceCfg):
     data_dir: str = "bb/chirp_data.pt"  # located in data/bb/chirp_data.pt
     # 2 armature + 2 damping + 2 friction + 2 bias + 1 delay = 9 parameters
     bounds_params: torch.Tensor = torch.zeros((N_JOINTS * 4 + 1, 2))
-    # TODO: replace with actual joint names from USD if ".*" causes issues
-    joint_order: list[str] = ["left_wheel_joint", "right_wheel_joint"]
+    joint_order: list[str] = ["drive_left", "drive_right"]
 
     def __post_init__(self):
         n = N_JOINTS

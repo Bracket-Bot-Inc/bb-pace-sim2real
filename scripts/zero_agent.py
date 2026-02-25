@@ -8,7 +8,6 @@
 """Launch Isaac Sim Simulator first."""
 
 import argparse
-from isaaclab_tasks.utils import import_packages
 
 from isaaclab.app import AppLauncher
 

@@ -16,8 +16,8 @@ HOVERBOARD_PACE_ACTUATOR_CFG = PaceDCMotorCfg(
     saturation_effort=6.8,    # peak/stall torque [Nm]
     effort_limit=6.8,         # [Nm]
     velocity_limit=73.0,      # ~700 RPM no-load [rad/s]
-    stiffness={".*": 0.7},   # PD P-gain [Nm/rad] - needs tuning
-    damping={".*": 4.8},      # PD D-gain [Nm·s/rad] - needs tuning
+    stiffness={".*": 4.8},   # PD P-gain [Nm/rad]
+    damping={".*": 0.7},      # PD D-gain [Nm·s/rad]
     encoder_bias=[0.0] * 2,   # 2 wheel joints
     max_delay=10,             # max delay in simulation steps
 )
@@ -30,7 +30,7 @@ N_JOINTS = 2
 class BBPaceCfg(PaceCfg):
     """Pace configuration for BB (BracketBot) robot."""
     robot_name: str = "bb"
-    data_dir: str = "bb/chirp_data.pt"  # located in data/bb/chirp_data.pt
+    data_dir: str = "bracketbot/bb_chirp_data.pt"
     # 2 armature + 2 damping + 2 friction + 2 bias + 1 delay = 9 parameters
     bounds_params: torch.Tensor = torch.zeros((N_JOINTS * 4 + 1, 2))
     joint_order: list[str] = ["drive_left", "drive_right"]
@@ -50,10 +50,15 @@ class BBPaceCfg(PaceCfg):
 class BBPaceSceneCfg(PaceSim2realSceneCfg):
     """Scene configuration for BB robot in Pace Sim2Real environment."""
     robot: ArticulationCfg = ArticulationCfg(
-        spawn=sim_utils.UsdFileCfg(usd_path=BB_USD_PATH),
+        spawn=sim_utils.UsdFileCfg(
+            usd_path=BB_USD_PATH,
+            articulation_props=sim_utils.ArticulationRootPropertiesCfg(
+                enabled_self_collisions=False,
+            ),
+        ),
         prim_path="{ENV_REGEX_NS}/Robot",
         init_state=ArticulationCfg.InitialStateCfg(
-            pos=(0.0, 0.0, 0.05),
+            pos=(0.0, 0.0, 0.3),
             rot=(1.0, 0.0, 0.0, 0.0),
         ),
         actuators={"wheels": HOVERBOARD_PACE_ACTUATOR_CFG},
@@ -68,5 +73,5 @@ class BBPaceEnvCfg(PaceSim2realEnvCfg):
 
     def __post_init__(self):
         super().__post_init__()
-        self.sim.dt = 0.0025  # 400Hz simulation
-        self.decimation = 1   # 400Hz control
+        self.sim.dt = 0.005  # 200Hz simulation
+        self.decimation = 1  # 200Hz control

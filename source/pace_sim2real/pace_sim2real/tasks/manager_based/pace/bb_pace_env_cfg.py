@@ -16,8 +16,8 @@ HOVERBOARD_PACE_ACTUATOR_CFG = PaceDCMotorCfg(
     saturation_effort=6.8,    # peak/stall torque [Nm]
     effort_limit=6.8,         # [Nm]
     velocity_limit=73.0,      # ~700 RPM no-load [rad/s]
-    stiffness={".*": 4.8},   # PD P-gain [Nm/rad]
-    damping={".*": 0.7},      # PD D-gain [Nm·s/rad]
+    stiffness={".*": 0.535},  # Nm/rad (vel_gain * pos_gain / 2π)
+    damping={".*": 0.111},    # Nm·s/rad (vel_gain / 2π)
     encoder_bias=[0.0] * 2,   # 2 wheel joints
     max_delay=10,             # max delay in simulation steps
 )
@@ -40,9 +40,9 @@ class BBPaceCfg(PaceCfg):
         self.bounds_params[:n, 0] = 1e-5
         self.bounds_params[:n, 1] = 1.0       # armature [kg·m²]
         self.bounds_params[n:2*n, 1] = 7.0    # viscous damping [Nm·s/rad]
-        self.bounds_params[2*n:3*n, 1] = 0.5  # Coulomb friction
-        self.bounds_params[3*n:4*n, 0] = -0.1
-        self.bounds_params[3*n:4*n, 1] = 0.1  # encoder bias [rad]
+        self.bounds_params[2*n:3*n, 1] = 0.4  # Coulomb friction
+        self.bounds_params[3*n:4*n, 0] = -0.05
+        self.bounds_params[3*n:4*n, 1] = 0.05  # encoder bias [rad]
         self.bounds_params[4*n, 1] = 10.0     # delay [sim steps]
 
 

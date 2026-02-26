@@ -94,18 +94,18 @@ HOVERBOARD_TORQUE_ACTUATOR_CFG = PaceDCMotorCfg(
 class BBPaceTorqueCfg(PaceCfg):
     """Pace configuration for BB torque-based sysid."""
     robot_name: str = "bb"
-    data_dir: str = "bracketbot/bb_torque_chirp_data.pt"
+    data_dir: str = "bracketbot/bb_torque_chirp_data_1.0Nm.pt"
     bounds_params: torch.Tensor = torch.zeros((N_JOINTS * 4 + 1, 2))
     joint_order: list[str] = ["drive_left", "drive_right"]
 
     def __post_init__(self):
         n = N_JOINTS
         self.bounds_params[:n, 0] = 1e-5
-        self.bounds_params[:n, 1] = 1.0       # armature [kg·m²]
-        self.bounds_params[n:2*n, 1] = 0.01   # viscous damping [Nm·s/rad]
-        self.bounds_params[2*n:3*n, 1] = 0.4  # Coulomb friction
-        self.bounds_params[3*n:4*n, 0] = -0.05
-        self.bounds_params[3*n:4*n, 1] = 0.05  # encoder bias [rad]
+        self.bounds_params[:n, 1] = 2.0       # armature [kg·m²]
+        self.bounds_params[n:2*n, 1] = 7.0    # viscous damping [Nm·s/rad]
+        self.bounds_params[2*n:3*n, 1] = 1.0  # Coulomb friction
+        self.bounds_params[3*n:4*n, 0] = -0.2
+        self.bounds_params[3*n:4*n, 1] = 0.2  # encoder bias [rad]
         self.bounds_params[4*n, 1] = 10.0     # delay [sim steps]
 
 

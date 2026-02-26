@@ -112,13 +112,14 @@ if plot_score:
     plt.show()
 
 if plot_trajectory:
+    # Position comparison
     for i in range(len(joint_order)):
         plt.figure(figsize=(8, 4.5))
-        plt.plot(time, trajectories[:, i].cpu().numpy() - encoder_bias[i].item(), c="tab:orange", label="Sim", linewidth=2)  # in encoder frame
+        plt.plot(time, trajectories[:, i].cpu().numpy() - encoder_bias[i].item(), c="tab:orange", label="Sim", linewidth=2)
         plt.plot(time, real_trajectories[:, i].cpu().numpy(), label="Real", c="tab:green", linestyle="--", linewidth=2)
         if target_trajectories is not None:
             plt.plot(time, target_trajectories[:, i].cpu().numpy(), c="grey", label="Target pos", linestyle="--", alpha=0.5)
-        plt.title(f"Joint {joint_order[i]}")
+        plt.title(f"Joint {joint_order[i]} — Position")
         plt.xlabel("Time [s]")
         plt.ylabel("Joint position [rad]")
         plt.legend()
@@ -126,6 +127,28 @@ if plot_trajectory:
         plt.tight_layout()
         plt.show()
 
+    # Velocity comparison (for torque mode)
+    if torque_mode:
+        dt = time[1:] - time[:-1]
+        # Real velocity from finite difference
+        real_vel = (real_trajectories[1:] - real_trajectories[:-1]) / dt.unsqueeze(-1)
+        # Sim velocity from finite difference
+        sim_vel = (trajectories[1:] - trajectories[:-1]) / dt.unsqueeze(-1)
+        time_vel = time[1:]
+
+        for i in range(len(joint_order)):
+            plt.figure(figsize=(8, 4.5))
+            plt.plot(time_vel, sim_vel[:, i].cpu().numpy(), c="tab:orange", label="Sim", linewidth=1, alpha=0.8)
+            plt.plot(time_vel, real_vel[:, i].cpu().numpy(), label="Real", c="tab:green", linewidth=1, alpha=0.8)
+            plt.title(f"Joint {joint_order[i]} — Velocity")
+            plt.xlabel("Time [s]")
+            plt.ylabel("Joint velocity [rad/s]")
+            plt.legend()
+            plt.grid()
+            plt.tight_layout()
+            plt.show()
+
+    # Torque input plot
     if torque_mode and target_torques is not None:
         for i in range(len(joint_order)):
             plt.figure(figsize=(8, 4.5))

@@ -38,6 +38,8 @@ class CMAESOptimizer:
             config_data["des_torque"] = data["des_torque"]
         if "des_dof_pos" in data:
             config_data["des_dof_pos"] = data["des_dof_pos"]
+        if "dof_vel" in data:
+            config_data["dof_vel"] = data["dof_vel"]
         torch.save(config_data, log_dir + "/config.pt")
 
         self.bounds = bounds
@@ -77,6 +79,13 @@ class CMAESOptimizer:
     def tell(self, sim_dof_pos, real_dof_pos):
         self.scores += torch.sum(torch.square(sim_dof_pos - real_dof_pos - self.sim_params[:, self.bias_idx]), dim=1)
         self.sim_dof_pos_buffer[:, self.scores_counter, :] = sim_dof_pos
+        self.scores_counter += 1
+
+    def tell_vel(self, sim_dof_vel, real_dof_vel, sim_dof_pos=None):
+        """Velocity-based scoring — no encoder bias needed."""
+        self.scores += torch.sum(torch.square(sim_dof_vel - real_dof_vel), dim=1)
+        if sim_dof_pos is not None:
+            self.sim_dof_pos_buffer[:, self.scores_counter, :] = sim_dof_pos
         self.scores_counter += 1
 
     def evolve(self):

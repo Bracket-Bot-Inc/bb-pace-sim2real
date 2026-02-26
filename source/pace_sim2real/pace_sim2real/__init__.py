@@ -10,6 +10,7 @@ Public Python API for the pace_sim2real package.
 
 from .tasks.manager_based.pace.pace_sim2real_env_cfg import (
     PaceSim2realEnvCfg,
+    PaceTorqueSim2realEnvCfg,
     PaceSim2realSceneCfg,
     PaceCfg,
 )
@@ -19,6 +20,7 @@ from .optim import CMAESOptimizer
 
 __all__ = [
     "PaceSim2realEnvCfg",
+    "PaceTorqueSim2realEnvCfg",
     "PaceSim2realSceneCfg",
     "PaceCfg",
     "CMAESOptimizer"

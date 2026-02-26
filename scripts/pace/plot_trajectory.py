@@ -77,7 +77,9 @@ config = torch.load(log_dir / "config.pt")
 joint_order = config["joint_order"]
 trajectories = torch.load(log_dir / "best_trajectory.pt")  # time x joints
 real_trajectories = config["dof_pos"]  # time x joints
-target_trajectories = config["des_dof_pos"]  # time x joints
+torque_mode = "des_torque" in config
+target_trajectories = config.get("des_dof_pos")  # None in torque mode
+target_torques = config.get("des_torque")  # None in position mode
 time = config["time"]  # time
 
 print(f"Best parameter set: {mean}")
@@ -114,13 +116,26 @@ if plot_trajectory:
         plt.figure(figsize=(8, 4.5))
         plt.plot(time, trajectories[:, i].cpu().numpy() - encoder_bias[i].item(), c="tab:orange", label="Sim", linewidth=2)  # in encoder frame
         plt.plot(time, real_trajectories[:, i].cpu().numpy(), label="Real", c="tab:green", linestyle="--", linewidth=2)
-        plt.plot(time, target_trajectories[:, i].cpu().numpy(), c="grey", label="Target", linestyle="--", alpha=0.5)
-        plt.title(f"Joint {joint_order[i]}")  # Use joint names from config
+        if target_trajectories is not None:
+            plt.plot(time, target_trajectories[:, i].cpu().numpy(), c="grey", label="Target pos", linestyle="--", alpha=0.5)
+        plt.title(f"Joint {joint_order[i]}")
         plt.xlabel("Time [s]")
         plt.ylabel("Joint position [rad]")
         plt.legend()
         plt.grid()
         plt.tight_layout()
         plt.show()
+
+    if torque_mode and target_torques is not None:
+        for i in range(len(joint_order)):
+            plt.figure(figsize=(8, 4.5))
+            plt.plot(time, target_torques[:, i].cpu().numpy(), c="tab:red", label="Commanded torque", linewidth=1)
+            plt.title(f"Joint {joint_order[i]} — Input Torque")
+            plt.xlabel("Time [s]")
+            plt.ylabel("Torque [Nm]")
+            plt.legend()
+            plt.grid()
+            plt.tight_layout()
+            plt.show()
 
 print("Plotting complete.")

@@ -58,8 +58,14 @@ class PaceSim2realSceneCfg(InteractiveSceneCfg):
 
 @configclass
 class ActionsCfg:
-    """Action specifications for the MDP."""
+    """Action specifications for the MDP — position targets."""
     joint_pos = mdp.JointPositionActionCfg(asset_name="robot", joint_names=[".*"], scale=1.0, use_default_offset=False)  # actions = absolute joint position targets
+
+
+@configclass
+class TorqueActionsCfg:
+    """Action specifications for the MDP — direct torques."""
+    joint_effort = mdp.JointEffortActionCfg(asset_name="robot", joint_names=[".*"], scale=1.0)
 
 
 @configclass
@@ -145,3 +151,9 @@ class PaceSim2realEnvCfg(ManagerBasedRLEnvCfg):
         self.sim.render_interval = 4  # render at 100Hz
 
         self.scene.robot.spawn.articulation_props.fix_root_link = True
+
+
+@configclass
+class PaceTorqueSim2realEnvCfg(PaceSim2realEnvCfg):
+    """Torque-based PACE environment — actions are direct torques."""
+    actions: TorqueActionsCfg = TorqueActionsCfg()

@@ -21,3 +21,12 @@ gym.register(
         "env_cfg_entry_point": f"{__name__}.pace.bb_pace_env_cfg:BBPaceEnvCfg"
     },
 )
+
+gym.register(
+    id="Isaac-Pace-BB-Torque-v0",
+    entry_point="isaaclab.envs:ManagerBasedRLEnv",
+    disable_env_checker=True,
+    kwargs={
+        "env_cfg_entry_point": f"{__name__}.pace.bb_pace_env_cfg:BBPaceTorqueEnvCfg"
+    },
+)

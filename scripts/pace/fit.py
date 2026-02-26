@@ -60,8 +60,16 @@ def main():
 
     data = torch.load(data_file)
     time_data = data["time"].to(env.unwrapped.device)
-    target_dof_pos = data["des_dof_pos"].to(env.unwrapped.device)
     measured_dof_pos = data["dof_pos"].to(env.unwrapped.device)
+
+    # Detect torque vs position mode based on data keys
+    torque_mode = "des_torque" in data
+    if torque_mode:
+        target_actions = data["des_torque"].to(env.unwrapped.device)
+        print("[INFO]: Torque-based sysid mode")
+    else:
+        target_actions = data["des_dof_pos"].to(env.unwrapped.device)
+        print("[INFO]: Position-based sysid mode")
 
     initial_dof_pos = measured_dof_pos[0, :].unsqueeze(0).repeat(env.unwrapped.num_envs, 1)
 
@@ -93,7 +101,7 @@ def main():
             # compute zero actions
             opt.tell(env.unwrapped.scene.articulations["robot"].data.joint_pos[:, sim_joint_ids], measured_dof_pos[counter, :].unsqueeze(0).repeat(env.unwrapped.num_envs, 1))
             actions = torch.zeros(env.action_space.shape, device=env.unwrapped.device)
-            actions[:, sim_joint_ids] = target_dof_pos[counter, :].unsqueeze(0).repeat(env.unwrapped.num_envs, 1)
+            actions[:, sim_joint_ids] = target_actions[counter, :].unsqueeze(0).repeat(env.unwrapped.num_envs, 1)
             # apply actions
             env.step(actions)
             counter += 1

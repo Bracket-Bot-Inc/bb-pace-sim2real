@@ -28,12 +28,17 @@ class CMAESOptimizer:
         log_dir = os.path.join(log_dir, folder_time)
         os.makedirs(log_dir, exist_ok=True)
         self.writer = TensorboardSummaryWriter(log_dir=log_dir)
-        torch.save({"bounds": bounds,
-                    "joint_order": joint_order,
-                    "dof_pos": data["dof_pos"],
-                    "des_dof_pos": data["des_dof_pos"],
-                    "time": data["time"]
-                    }, log_dir + "/config.pt")
+        config_data = {
+            "bounds": bounds,
+            "joint_order": joint_order,
+            "dof_pos": data["dof_pos"],
+            "time": data["time"],
+        }
+        if "des_torque" in data:
+            config_data["des_torque"] = data["des_torque"]
+        if "des_dof_pos" in data:
+            config_data["des_dof_pos"] = data["des_dof_pos"]
+        torch.save(config_data, log_dir + "/config.pt")
 
         self.bounds = bounds
 
